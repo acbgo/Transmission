@@ -31,18 +31,36 @@ def container(file_name, file_path, datatype):
     st.divider()
 
 
-def mainContent():
+def copy_text():
+    # 获取text.txt文件中的内容
+    with open("text.txt", "r", encoding="utf-8") as f:
+        text = f.read()
+        f.close()
+    # 显示文本内容
+    txt = st.text_area("共享文本", text)
+    st.write(f'You wrote {len(txt)} characters.')
+    # 以UTF-8编码写入文件
+    if st.button("保存"):
+        with open("text.txt", "w", encoding="utf-8") as f:
+            f.write(txt)
+            f.close()
+        st.success(f"已保存文本")
+
+
+def main_content():
     # 创建一个文件夹用于保存上传的文件
     if not os.path.exists("uploads"):
         os.makedirs("uploads")
+    if not os.path.exists("text.txt"):
+        with open("text.txt", "w") as f:
+            f.write("")
 
-    # 页面标题和说明文字
-    st.header("校园网环境下的文件中转站")
+    st.title("局域网环境下的文件中转站")
     st.divider()
+
+    # 上传文件
     msg = "选择文件，允许上传多个文件，支持图片、文本、PDF、Word、PPT、Markdown、MP4、MP3、压缩包等格式"
     uploaded_files = st.file_uploader(msg, accept_multiple_files=True)
-
-    # 保存文件
     if uploaded_files is not None:
         for uploaded_file in uploaded_files:
             file_path = os.path.join("uploads", uploaded_file.name)
@@ -52,54 +70,62 @@ def mainContent():
 
     st.divider()
 
-    # 显示文件列表并支持下载
-    file_list = os.listdir("uploads")
-    if len(file_list) > 0:
-        st.write("文件列表:")
-        for file_name in file_list:
-            file_path = os.path.join("uploads", file_name)
-            # 判断文件类型
-            suffix = file_name.split(".")[-1]
-            # 图片类型
-            if suffix == "png" or suffix == "jpg" or suffix == "jpeg":
-                container(file_name, file_path, "image/png")
+    with st.container():
+        col1, col2, col3 = st.columns(3)
+        with col1.container():
+            # 共享文本
+            copy_text()
+        with col3.container():
+            # 显示文件列表并支持下载
+            file_list = os.listdir("uploads")
+            if len(file_list) > 0:
+                st.write("文件列表:")
+                for file_name in file_list:
+                    file_path = os.path.join("uploads", file_name)
+                    # 判断文件类型
+                    suffix = file_name.split(".")[-1]
+                    # 图片类型
+                    if suffix == "png" or suffix == "jpg" or suffix == "jpeg":
+                        container(file_name, file_path, "image/png")
 
-            # 文本类型
-            elif suffix == "txt":
-                container(file_name, file_path, "text/plain")
+                    # 文本类型
+                    elif suffix == "txt":
+                        container(file_name, file_path, "text/plain")
 
-            # PDF类型
-            elif suffix == "pdf":
-                container(file_name, file_path, "application/pdf")
+                    # PDF类型
+                    elif suffix == "pdf":
+                        container(file_name, file_path, "application/pdf")
 
-            # Word类型
-            elif suffix == "doc" or suffix == "docx":
-                container(file_name, file_path,
-                          "application/vnd.openxmlformats-officedocument.wordprocessingml.document")
+                    # Word类型
+                    elif suffix == "doc" or suffix == "docx":
+                        container(file_name, file_path,
+                                  "application/vnd.openxmlformats-officedocument.wordprocessingml.document")
 
-            # PPT类型
-            elif suffix == "ppt" or suffix == "pptx":
-                container(file_name, file_path,
-                          "application/vnd.openxmlformats-officedocument.presentationml.presentation")
+                    # PPT类型
+                    elif suffix == "ppt" or suffix == "pptx":
+                        container(file_name, file_path,
+                                  "application/vnd.openxmlformats-officedocument.presentationml.presentation")
 
-            # Markdown类型
-            elif suffix == "md":
-                container(file_name, file_path, "text/markdown")
+                    # Markdown类型
+                    elif suffix == "md":
+                        container(file_name, file_path, "text/markdown")
 
-            # MP4类型
-            elif suffix == "mp4":
-                container(file_name, file_path, "video/mp4")
+                    # MP4类型
+                    elif suffix == "mp4":
+                        container(file_name, file_path, "video/mp4")
 
-            # MP3类型
-            elif suffix == "mp3":
-                container(file_name, file_path, "audio/mp3")
+                    # MP3类型
+                    elif suffix == "mp3":
+                        container(file_name, file_path, "audio/mp3")
 
-            # zip类型
-            elif suffix == "zip" or suffix == "rar" or suffix == "7z":
-                container(file_name, file_path, "application/zip")
+                    # zip类型
+                    elif suffix == "zip" or suffix == "rar" or suffix == "7z":
+                        container(file_name, file_path, "application/zip")
 
 
 if __name__ == '__main__':
+    st.set_page_config(page_icon=":shark:")
+
     # 用户信息
     names = ["管理员"]  # 用户名
     usernames = ['csb']  # 登录名
@@ -118,11 +144,11 @@ if __name__ == '__main__':
     if authentication_status:
         with st.container():
             cols1, cols2 = st.columns(2)
-            cols1.write('欢迎 *%s*' % (name))
+            cols1.write('欢迎 *%s*' % name)
             with cols2.container():
                 authenticator.logout('Logout', 'main')
 
-        mainContent()
+        main_content()
     elif not authentication_status:
         st.error('Username/password is incorrect')
     elif authentication_status is None:
