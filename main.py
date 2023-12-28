@@ -138,7 +138,7 @@ if __name__ == '__main__':
     # 生成服务器端的用户身份凭证信息
     for i in range(0, len(names)):
         credentials['usernames'][usernames[i]] = {'name': names[i], 'password': hashed_passwords[i]}
-    authenticator = stauth.Authenticate(credentials, 'some_cookie_name', 'some_signature_key', cookie_expiry_days=1)
+    authenticator = stauth.Authenticate(credentials, 'some_cookie_name', 'some_signature_key', cookie_expiry_days=10)
     name, authentication_status, username = authenticator.login('Login', 'main')
 
     if authentication_status:
