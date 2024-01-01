@@ -2,10 +2,10 @@
 
 
 
-运行指令
+Ubuntu服务器后台运行指令
 
 ```
-streamlit run main.py &
+nohup streamlit run app.py --server.port 8501 &
 ```
 
 
